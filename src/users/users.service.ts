@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
@@ -8,10 +8,18 @@ import { Repository } from 'typeorm';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-  ) {}
+  ) {
+  }
+
   async create(createUserDto: CreateUserDto) {
-    const user = this.usersRepository.create(createUserDto);
-   return this.usersRepository.save(user);
+    let user = this.usersRepository.create(createUserDto);
+    try {
+      user = await this.usersRepository.save(user);
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error);
+    }
+    return user;
   }
 
   findAll() {
@@ -22,11 +30,13 @@ export class UsersService {
     return this.usersRepository.findOne(where);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update({ id }, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    await this.usersRepository.update({ id }, updateUserDto);
+    return this.findOne({ id });
   }
 
-  remove(id: number) {
-    return this.usersRepository.delete({ id });
+  async remove(id: string) {
+    await this.usersRepository.delete({ id });
+    return { id };
   }
 }

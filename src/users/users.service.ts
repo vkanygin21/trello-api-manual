@@ -9,16 +9,17 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return this.usersRepository.create(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const user = this.usersRepository.create(createUserDto);
+   return this.usersRepository.save(user);
   }
 
   findAll() {
     return this.usersRepository.find();
   }
 
-  findOne(id) {
-    return this.usersRepository.findOne({ id });
+  findOne(where) {
+    return this.usersRepository.findOne(where);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

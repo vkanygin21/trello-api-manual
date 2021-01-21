@@ -1,7 +1,7 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { Public } from './public.decorator';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -10,14 +10,9 @@ export class AuthController {
   @ApiTags('auth')
   @ApiBody({ type: 'object', schema: { example: { email: '', password: '' } } })
   @ApiOperation({ summary: 'auth' })
-  @Public()
+  @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Body('email') email, @Body('password') password) {
-    const currentUser = await this.authService.validateUser(email, password);
-    if (currentUser) {
-      return this.authService.login(currentUser);
-    } else {
-      throw new UnauthorizedException();
-    }
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
 }

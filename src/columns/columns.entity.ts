@@ -1,4 +1,3 @@
-
 import {
   Column,
   CreateDateColumn,
@@ -11,13 +10,11 @@ import {
 } from 'typeorm';
 import { IsString, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
-// import { CardEntity } from '../card/card.entity';
 import { User } from '../users/user.entity';
-
+import { Cards } from '../cards/cards.entity';
 
 @Entity()
 export class Columns {
-
   @PrimaryGeneratedColumn()
   id?: number;
 
@@ -36,11 +33,11 @@ export class Columns {
    * Relations
    */
 
-  // @OneToMany((type) => CardEntity, (ul) => ul.column)
-  // @Type((t) => CardEntity)
-  // @JoinColumn()
-  // cards?: CardEntity[];
-
   @ManyToOne((type) => User, (el) => el.columns)
   public user: User;
+
+  @OneToMany((type) => Cards, (ul) => ul.column)
+  @Type((t) => Cards)
+  @JoinColumn()
+  cards?: Cards[];
 }

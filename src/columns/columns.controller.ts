@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ColumnsService } from './columns.service';
 import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -9,7 +17,10 @@ export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 
   @Post()
-  create(@Body() createColumnDto: CreateColumnsDto, @Param('userId') userId: string) {
+  create(
+    @Body() createColumnDto: CreateColumnsDto,
+    @Param('userId') userId: string,
+  ) {
     console.log(userId, createColumnDto);
     return this.columnsService.create(createColumnDto, userId);
   }

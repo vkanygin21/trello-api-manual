@@ -6,11 +6,14 @@ import {
   Entity,
   JoinColumn,
   OneToMany,
-  PrimaryGeneratedColumn, UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { classToPlain, Exclude, Type } from 'class-transformer';
-import { Columns } from '../columns/column.entity';
+import { Columns } from '../columns/columns.entity';
+import { Cards } from '../cards/cards.entity';
+import { Comments } from '../comments/comments.entity';
 
 @Entity()
 export class User {
@@ -41,6 +44,16 @@ export class User {
   @JoinColumn()
   columns?: Columns[];
 
+  @OneToMany((type) => Cards, (ul) => ul.user)
+  @Type((t) => Cards)
+  @JoinColumn()
+  cards?: Cards[];
+
+  @OneToMany((type) => Comments, (ul) => ul.user)
+  @Type((t) => Comments)
+  @JoinColumn()
+  comments?: Comments[];
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
@@ -59,4 +72,3 @@ export class User {
     return classToPlain(this);
   }
 }
-

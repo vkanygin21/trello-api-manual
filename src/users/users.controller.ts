@@ -6,14 +6,14 @@ import {
   Param,
   Patch,
   Post,
-  Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { User } from './user.entity';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -35,15 +35,15 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne({ id });
+  @Get()
+  findOne(@Request() req) {
+    return this.usersService.findOne(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Body() updateUserDto: UpdateUserDto, @CurrentUser() userId) {
+    return this.usersService.update(userId, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)

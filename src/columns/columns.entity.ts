@@ -15,8 +15,12 @@ import { Cards } from '../cards/cards.entity';
 
 @Entity()
 export class Columns {
-  @PrimaryGeneratedColumn()
-  id?: number;
+  @PrimaryGeneratedColumn('uuid')
+  id?: string;
+
+  @IsString({ always: true })
+  @Column()
+  userId: string;
 
   @CreateDateColumn({ nullable: true })
   createdAt?: Date;
@@ -33,7 +37,10 @@ export class Columns {
    * Relations
    */
 
-  @ManyToOne((type) => User, (el) => el.columns)
+  @ManyToOne((type) => User, (el) => el.columns, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   public user: User;
 
   @OneToMany((type) => Cards, (ul) => ul.column)

@@ -1,6 +1,4 @@
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { classToPlain, Exclude, Type } from 'class-transformer';
 import { Columns } from '../columns/columns.entity';
 import { Cards } from '../cards/cards.entity';
@@ -39,34 +36,20 @@ export class User {
   @Column({ nullable: true })
   lastName: string;
 
-  @OneToMany((type) => Columns, (ul) => ul.user)
-  @Type((t) => Columns)
+  @OneToMany(() => Columns, (columns) => columns.user)
+  @Type(() => Columns)
   @JoinColumn()
   columns?: Columns[];
 
-  @OneToMany((type) => Cards, (ul) => ul.user)
-  @Type((t) => Cards)
+  @OneToMany(() => Cards, (cards) => cards.user)
+  @Type(() => Cards)
   @JoinColumn()
   cards?: Cards[];
 
-  @OneToMany((type) => Comments, (ul) => ul.user)
-  @Type((t) => Comments)
+  @OneToMany(() => Comments, (comments) => comments.user)
+  @Type(() => Comments)
   @JoinColumn()
   comments?: Comments[];
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-
-  async comparePassword(attempt: string): Promise<boolean> {
-    return await bcrypt.compare(attempt, this.password);
-  }
-
-  async compareId(attempt: string): Promise<boolean> {
-    return await bcrypt.compare(attempt, this.id);
-  }
 
   toJSON() {
     return classToPlain(this);

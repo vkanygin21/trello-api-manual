@@ -14,8 +14,16 @@ import { Type } from 'class-transformer';
 
 @Entity()
 export class Cards {
-  @PrimaryGeneratedColumn()
-  id?: number;
+  @PrimaryGeneratedColumn('uuid')
+  id?: string;
+
+  @IsString({ always: true })
+  @Column()
+  userId: string;
+
+  @IsString({ always: true })
+  @Column()
+  columnId: string;
 
   @IsString({ always: true })
   @MaxLength(100, { always: true })
@@ -26,14 +34,20 @@ export class Cards {
    * Relations
    */
 
-  @OneToMany((type) => Comments, (ul) => ul.card)
+  @OneToMany((type) => Comments, (ul) => ul.card, { onDelete: 'CASCADE' })
   @Type((t) => Comments)
   @JoinColumn()
   comments?: Comments[];
 
-  @ManyToOne((type) => Columns, (el) => el.cards)
+  @ManyToOne((type) => Columns, (el) => el.cards, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   public column: Columns;
 
-  @ManyToOne((type) => User, (el) => el.cards)
+  @ManyToOne((type) => User, (el) => el.cards, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   public user: User;
 }

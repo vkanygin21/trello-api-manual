@@ -1,12 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -16,11 +13,13 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const insertUser = await this.usersRepository.insert(createUserDto);
-      console.log(insertUser);
-      return this.findOne({ id: insertUser.identifiers[0] });
+      const hashPassword = await bcrypt.hash(createUserDto.password, 10);
+      const saveUser = await this.usersRepository.save({
+        ...createUserDto,
+        password: hashPassword,
+      });
+      return this.usersRepository.findOne(saveUser.id);
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error);
     }
   }
@@ -30,24 +29,17 @@ export class UsersService {
   }
 
   async findOne(where) {
-    // todo: handle 404
-    const user = await this.usersRepository.findOne(where);
-    if (!user) {
-      throw new NotFoundException();
-    } else {
-      return user;
-    }
+    return await this.usersRepository.findOne(where);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    await this.findOne({ id });
-    await this.usersRepository.update({ id }, updateUserDto);
-    return this.findOne({ id });
+  async update(userId: string, updateUserDto: UpdateUserDto) {
+    return await this.usersRepository.update({ id: userId }, updateUserDto);
   }
 
   async remove(id: string) {
-    await this.findOne({ id });
+    await this.usersRepository.findOne({ id });
     await this.usersRepository.delete({ id });
+
     return { id };
   }
 }

@@ -5,8 +5,8 @@ import { Cards } from '../cards/cards.entity';
 
 @Entity()
 export class Comments {
-  @PrimaryGeneratedColumn()
-  id?: number;
+  @PrimaryGeneratedColumn('uuid')
+  id?: string;
 
   @IsString({ always: true })
   @MaxLength(100, { always: true })
@@ -21,9 +21,15 @@ export class Comments {
    * Relations
    */
 
-  @ManyToOne((type) => Cards, (el) => el.comments)
+  @ManyToOne((type) => Cards, (el) => el.comments, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   public card: Cards;
 
-  @ManyToOne((type) => User, (el) => el.cards)
+  @ManyToOne((type) => User, (el) => el.cards, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   public user: User;
 }

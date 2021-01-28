@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cards } from './cards.entity';
 import { ColumnsService } from '../columns/columns.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class CardsService {
@@ -11,17 +12,28 @@ export class CardsService {
     @InjectRepository(Cards)
     private readonly cardsRepository: Repository<Cards>,
     private readonly columnsService: ColumnsService,
+    private readonly usersService: UsersService,
   ) {}
 
-  async create(createCardsDto: CreateCardsDto, columnId: string) {
-    const column = await this.columnsService.findOne({ id: columnId });
+  async create(
+    createCardsDto: CreateCardsDto,
+    columnId: string,
+    userId: string,
+  ) {
+    const user = await this.usersService.findOne({ id: userId });
+    const column = await this.columnsService.findOne({
+      id: columnId,
+      userId: userId,
+    });
     const card = await this.cardsRepository.create(createCardsDto);
+    card.user = user;
     card.column = column;
+
     return await this.cardsRepository.save(card);
   }
 
-  async findAll() {
-    return await this.cardsRepository.find();
+  async findAll(query?: any) {
+    return await this.cardsRepository.find(query);
   }
 
   findOne(where) {
@@ -32,8 +44,9 @@ export class CardsService {
     return this.cardsRepository.update(id, updateCardsDto);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.cardsRepository.delete({ id });
+
     return { id };
   }
 }

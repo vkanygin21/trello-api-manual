@@ -3,39 +3,48 @@ import {
   Get,
   Post,
   Body,
-  Put,
   Param,
   Delete,
+  UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateCommentsDto, UpdateCommentsDto } from './comments.dto';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CardsOwnerGuard } from '../auth/cards-owner.guard';
 
+@ApiBearerAuth()
 @ApiTags('comments')
 @Controller('/cards/:cardId/comments')
 export class CommentsController {
   constructor(private readonly cardsService: CommentsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(
     @Body() createCommentsDto: CreateCommentsDto,
     @Param('cardId') cardId: string,
+    @CurrentUser() userId: string,
   ) {
-    console.log(cardId, createCommentsDto);
-    return this.cardsService.create(createCommentsDto, cardId);
+    return this.cardsService.create(createCommentsDto, cardId, userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.cardsService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cardsService.findOne(+id);
   }
 
-  @Put(':id')
+  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
+  @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateCommentsDto: UpdateCommentsDto,
@@ -43,8 +52,9 @@ export class CommentsController {
     return this.cardsService.update(+id, updateCommentsDto);
   }
 
+  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cardsService.remove(+id);
+    return this.cardsService.remove(id);
   }
 }

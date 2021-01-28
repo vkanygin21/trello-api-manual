@@ -15,14 +15,14 @@ export class ColumnsService {
 
   async create(createColumnsDto: CreateColumnsDto, userId: string) {
     const user = await this.userService.findOne({ id: userId });
-    const column = await this.columnsRepository.create(createColumnsDto);
-    console.log(user);
+    const column = this.columnsRepository.create(createColumnsDto);
     column.user = user;
+
     return await this.columnsRepository.save(column);
   }
 
-  async findAll() {
-    return await this.columnsRepository.find();
+  async findAll(query?: any) {
+    return await this.columnsRepository.find(query);
   }
 
   findOne(where) {
@@ -33,8 +33,9 @@ export class ColumnsService {
     return this.columnsRepository.update(id, updateColumnDto);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.columnsRepository.delete({ id });
+
     return { id };
   }
 }

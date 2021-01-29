@@ -12,7 +12,7 @@ import {
 import { ColumnsService } from './columns.service';
 import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ColumnsOwnerGuard } from '../auth/columns-owner.guard';
+import { ColumnsOwnerGuard } from './columns-owner.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 
@@ -24,12 +24,8 @@ export class ColumnsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(
-    @Body() createColumnDto: CreateColumnsDto,
-    @CurrentUser() userId: string,
-  ) {
-    console.log(userId, createColumnDto);
-    return this.columnsService.create(createColumnDto, userId);
+  create(@Body() createColumnDto: CreateColumnsDto, @CurrentUser() user) {
+    return this.columnsService.create(createColumnDto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -41,14 +37,13 @@ export class ColumnsController {
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Request() req) {
-    console.log(req.authInfo);
     return this.columnsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateColumnDto: UpdateColumnsDto) {
-    return this.columnsService.update(+id, updateColumnDto);
+    return this.columnsService.update(id, updateColumnDto);
   }
 
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)

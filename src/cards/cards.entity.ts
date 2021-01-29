@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { IsString, MaxLength } from 'class-validator';
 import { Columns } from '../columns/columns.entity';
-import { User } from '../users/user.entity';
+import { User } from '../users/users.entity';
 import { Comments } from '../comments/comments.entity';
 import { Type } from 'class-transformer';
 

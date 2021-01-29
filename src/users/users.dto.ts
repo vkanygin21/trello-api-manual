@@ -10,7 +10,7 @@ export class CreateUserDto {
   @IsString({ always: true })
   password: string;
 
-  @IsString({ always: true })
+  @IsString()
   firstName: string;
 
   @IsString({ always: true })

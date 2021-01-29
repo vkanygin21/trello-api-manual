@@ -12,9 +12,8 @@ import { CardsService } from './cards.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateCardsDto, UpdateCardsDto } from './cards.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CardsOwnerGuard } from '../auth/cards-owner.guard';
+import { CardsOwnerGuard } from './cards-owner.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { userInfo } from 'os';
 
 @ApiBearerAuth()
 @ApiTags('cards')
@@ -27,9 +26,9 @@ export class CardsController {
   create(
     @Body() createCardsDto: CreateCardsDto,
     @Param('columnId') columnId: string,
-    @CurrentUser() userId: string,
+    @CurrentUser() user,
   ) {
-    return this.cardsService.create(createCardsDto, columnId, userId);
+    return this.cardsService.create(createCardsDto, columnId, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -41,13 +40,13 @@ export class CardsController {
   @UseGuards(JwtAuthGuard, CardsOwnerGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cardsService.findOne(+id);
+    return this.cardsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, CardsOwnerGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCardsDto: UpdateCardsDto) {
-    return this.cardsService.update(+id, updateCardsDto);
+    return this.cardsService.update(id, updateCardsDto);
   }
 
   @UseGuards(JwtAuthGuard, CardsOwnerGuard)

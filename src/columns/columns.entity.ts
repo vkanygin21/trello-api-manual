@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { IsString, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
-import { User } from '../users/user.entity';
+import { User } from '../users/users.entity';
 import { Cards } from '../cards/cards.entity';
 
 @Entity()

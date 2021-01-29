@@ -7,22 +7,21 @@ import {
 import { CardsService } from '../cards/cards.service';
 
 @Injectable()
-export class CardsOwnerGuard implements CanActivate {
+export class CommentsOwnerGuard implements CanActivate {
   constructor(private readonly cardsService: CardsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const cardId = request.params.id;
+    const commentId = request.params.id;
     const currentUserId = request.user.id;
-    const [card] = await this.cardsService.findAll({
-      where: { id: cardId },
+    const [comment] = await this.cardsService.findAll({
+      where: { id: commentId },
       select: ['userId'],
     });
-    if (!card) {
+    if (!comment) {
       throw new NotFoundException();
     }
-    console.log(card.userId, currentUserId);
 
-    return currentUserId === card.userId;
+    return currentUserId === comment.userId;
   }
 }

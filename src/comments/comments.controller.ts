@@ -13,7 +13,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateCommentsDto, UpdateCommentsDto } from './comments.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CardsOwnerGuard } from '../auth/cards-owner.guard';
+import { CommentsOwnerGuard } from '../auth/comments-owner.guard';
 
 @ApiBearerAuth()
 @ApiTags('comments')
@@ -37,13 +37,13 @@ export class CommentsController {
     return this.cardsService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
+  @UseGuards(JwtAuthGuard, CommentsOwnerGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cardsService.findOne(+id);
   }
 
-  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
+  @UseGuards(JwtAuthGuard, CommentsOwnerGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -52,7 +52,7 @@ export class CommentsController {
     return this.cardsService.update(+id, updateCommentsDto);
   }
 
-  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
+  @UseGuards(JwtAuthGuard, CommentsOwnerGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.cardsService.remove(id);

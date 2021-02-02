@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
-import { ColumnsService } from "../columns/columns.service";
 
 @Injectable()
 export class CardsOwnerGuard implements CanActivate {
@@ -14,9 +13,12 @@ export class CardsOwnerGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const cardId = request.params.id;
+    const cardId = request.body.cardId || request.params.id;
     const currentUserId = request.user.id;
-    const card = await this.cardsService.findOne(cardId);
+    const card = await this.cardsService.findOne(
+      { cardId },
+      { select: 'userId' },
+    );
 
     if (!card) {
       throw new NotFoundException();
@@ -25,20 +27,3 @@ export class CardsOwnerGuard implements CanActivate {
   }
 }
 
-export class CardCreateGuard implements CanActivate {
-  constructor(private readonly columnsService: ColumnsService) {}
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const query = request.query.columnId;
-    console.log(query);
-    const currentUserId = await request.user.id;
-    const column = await this.columnsService.findOne(query);
-
-    if (!column) {
-      throw new NotFoundException();
-    }
-
-    return currentUserId === column.userId;
-  }
-}

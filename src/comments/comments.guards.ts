@@ -4,17 +4,18 @@ import {
   ExecutionContext,
   NotFoundException,
 } from '@nestjs/common';
-import { CardsService } from '../cards/cards.service';
+import { CommentsService } from './comments.service';
 
 @Injectable()
 export class CommentsOwnerGuard implements CanActivate {
-  constructor(private readonly cardsService: CardsService) {}
+  constructor(private readonly commentService: CommentsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const commentId = request.params.id;
     const currentUserId = request.user.id;
-    const comment = await this.cardsService.findOne(commentId);
+    const comment = await this.commentService.findOne( { commentId },
+      { select: 'userId' },);
 
     if (!comment) {
       throw new NotFoundException();

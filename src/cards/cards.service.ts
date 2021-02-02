@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { Cards } from './cards.entity';
@@ -12,18 +12,26 @@ export class CardsService {
   ) {}
 
   async create(entity: DeepPartial<Cards>, user: Users) {
-    return await this.cardsRepository.save({
+    const saveCard = await this.cardsRepository.save({
       ...entity,
       userId: user.id,
     });
+
+    try {
+      return this.cardsRepository.findOne(saveCard.id)
+    }
+
+    catch (error) {
+      throw new BadRequestException(error)
+    }
   }
 
   async findAll(user: Users) {
     return await this.cardsRepository.find({ where: { userId: user.id } });
   }
 
-  findOne(id: string) {
-    return this.cardsRepository.findOne(id);
+  findOne(id: any, options?) {
+    return this.cardsRepository.findOne(id, options);
   }
 
   async update(id: string, entity: DeepPartial<Cards>) {

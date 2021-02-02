@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -12,10 +11,10 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const hashPassword = await bcrypt.hash(createUserDto.password, 10);
+  async create(entity: DeepPartial<Users>) {
+    const hashPassword = await bcrypt.hash(entity.password, 10);
     const saveUser = await this.usersRepository.save({
-      ...createUserDto,
+      ...entity,
       password: hashPassword,
     });
 
@@ -26,16 +25,12 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.usersRepository.find();
-  }
-
   async findOne(id) {
     return await this.usersRepository.findOne(id);
   }
 
-  async update(user: Users, updateUserDto: UpdateUserDto) {
-    await this.usersRepository.update({ id: user.id }, updateUserDto);
+  async update(user: Users, entity: DeepPartial<Users>) {
+    await this.usersRepository.update({ id: user.id }, entity);
 
     return await this.usersRepository.findOne({ id: user.id });
   }

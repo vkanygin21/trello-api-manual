@@ -3,6 +3,9 @@ import { IsString, MaxLength } from 'class-validator';
 
 export class CreateCommentsDto {
   @IsString({ always: true })
+  cardId: string;
+
+  @IsString({ always: true })
   @MaxLength(100, { always: true })
   name: string;
 

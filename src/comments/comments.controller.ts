@@ -9,7 +9,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
 import { CreateCommentsDto, UpdateCommentsDto } from './comments.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -20,19 +20,19 @@ import { CardsOwnerGuard } from '../cards/cards.guards';
 
 @ApiBearerAuth()
 @ApiTags('comments')
-@Controller('/cards/:cardId/comments')
+@Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {
   }
 
   @UseGuards(JwtAuthGuard, CardsOwnerGuard)
+  @ApiBody({
+    type: 'object',
+    schema: { example: { cardId: '', name: '', body: '' } },
+  })
   @Post()
-  create(
-    @Body() createCommentsDto: CreateCommentsDto,
-    @Param('cardId') cardId: string,
-    @CurrentUser() user,
-  ) {
-    return this.commentsService.create(createCommentsDto, cardId, user);
+  create(@Body() createCommentsDto: CreateCommentsDto, @CurrentUser() user) {
+    return this.commentsService.create(createCommentsDto, user);
   }
 
   @UseGuards(JwtAuthGuard)

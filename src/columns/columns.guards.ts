@@ -12,9 +12,12 @@ export class ColumnsOwnerGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+    const query = request.query.columnId;
+    console.log(query);
     const columnId = await request.params.id;
+    const filter = columnId || query;
     const currentUserId = await request.user.id;
-    const column = await this.columnsService.findOne(columnId);
+    const column = await this.columnsService.findOne(query);
 
     if (!column) {
       throw new NotFoundException();

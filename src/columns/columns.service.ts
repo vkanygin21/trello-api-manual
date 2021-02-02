@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { Columns } from './columns.entity';
 import { Users } from '../users/users.entity';
 
@@ -11,9 +10,9 @@ export class ColumnsService {
     @InjectRepository(Columns)
     private readonly columnsRepository: Repository<Columns>,
   ) {}
-  async create(createColumnsDto: CreateColumnsDto, user: Users) {
+  async create(entity: DeepPartial<Columns>, user: Users) {
     return this.columnsRepository.save({
-      ...createColumnsDto,
+      ...entity,
       userId: user.id,
     });
   }
@@ -22,12 +21,12 @@ export class ColumnsService {
     return await this.columnsRepository.find({ where: { userId: user.id } });
   }
 
-  findOne(id: string) {
+  findOne(id) {
     return this.columnsRepository.findOne(id);
   }
 
-  async update(id: string, updateColumnDto: UpdateColumnsDto) {
-    await this.columnsRepository.update(id, updateColumnDto);
+  async update(id: string, entity: DeepPartial<Columns>) {
+    await this.columnsRepository.update(id, entity);
 
     return await this.columnsRepository.findOne(id);
   }

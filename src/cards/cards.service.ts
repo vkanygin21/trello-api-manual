@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCardsDto, UpdateCardsDto } from './cards.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { Cards } from './cards.entity';
 import { Users } from '../users/users.entity';
 
@@ -12,13 +11,11 @@ export class CardsService {
     private readonly cardsRepository: Repository<Cards>,
   ) {}
 
-  async create(createCardsDto: CreateCardsDto, columnId: string, user: Users) {
-    const createCard = await this.cardsRepository.save({
-      ...createCardsDto,
+  async create(entity: DeepPartial<Cards>, user: Users) {
+    return await this.cardsRepository.save({
+      ...entity,
       userId: user.id,
-      columnId: columnId,
     });
-    return createCard;
   }
 
   async findAll(user: Users) {
@@ -29,8 +26,8 @@ export class CardsService {
     return this.cardsRepository.findOne(id);
   }
 
-  async update(id: string, updateCardsDto: UpdateCardsDto) {
-    await this.cardsRepository.update(id, updateCardsDto);
+  async update(id: string, entity: DeepPartial<Cards>) {
+    await this.cardsRepository.update(id, entity);
 
     return await this.cardsRepository.findOne(id);
   }

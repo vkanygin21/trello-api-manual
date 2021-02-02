@@ -12,14 +12,14 @@ import {
 import { ColumnsService } from './columns.service';
 import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ColumnsOwnerGuard } from './columns-owner.guard';
+import { ColumnsOwnerGuard } from './columns.guards';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Users } from '../users/users.entity';
 
 @ApiBearerAuth()
 @ApiTags('columns')
-@Controller('/columns')
+@Controller('columns')
 export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 

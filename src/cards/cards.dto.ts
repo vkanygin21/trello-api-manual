@@ -5,6 +5,9 @@ export class CreateCardsDto {
   @IsString({ always: true })
   @MaxLength(100, { always: true })
   name: string;
+
+  @IsString({ always: true })
+  columnId: string;
 }
 
 export class UpdateCardsDto extends PartialType(CreateCardsDto) {}

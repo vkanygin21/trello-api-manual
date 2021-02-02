@@ -5,10 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
+import { ColumnsService } from "../columns/columns.service";
 
 @Injectable()
 export class CardsOwnerGuard implements CanActivate {
-  constructor(private readonly cardsService: CardsService) {}
+  constructor(private readonly cardsService: CardsService) {
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -20,5 +22,23 @@ export class CardsOwnerGuard implements CanActivate {
       throw new NotFoundException();
     }
     return currentUserId === card.userId;
+  }
+}
+
+export class CardCreateGuard implements CanActivate {
+  constructor(private readonly columnsService: ColumnsService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const query = request.query.columnId;
+    console.log(query);
+    const currentUserId = await request.user.id;
+    const column = await this.columnsService.findOne(query);
+
+    if (!column) {
+      throw new NotFoundException();
+    }
+
+    return currentUserId === column.userId;
   }
 }

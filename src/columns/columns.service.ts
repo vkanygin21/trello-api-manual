@@ -3,34 +3,33 @@ import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Columns } from './columns.entity';
-import { UsersService } from '../users/users.service';
+import { Users } from '../users/users.entity';
 
 @Injectable()
 export class ColumnsService {
   constructor(
     @InjectRepository(Columns)
     private readonly columnsRepository: Repository<Columns>,
-    private readonly userService: UsersService,
   ) {}
-
-  async create(createColumnsDto: CreateColumnsDto, userId: string) {
-    const user = await this.userService.findOne({ id: userId });
-    const column = this.columnsRepository.create(createColumnsDto);
-    column.user = user;
-
-    return await this.columnsRepository.save(column);
+  async create(createColumnsDto: CreateColumnsDto, user: Users) {
+    return this.columnsRepository.save({
+      ...createColumnsDto,
+      userId: user.id,
+    });
   }
 
-  async findAll(query?: any) {
-    return await this.columnsRepository.find(query);
+  async findAll(user: Users) {
+    return await this.columnsRepository.find({ where: { userId: user.id } });
   }
 
-  findOne(where) {
-    return this.columnsRepository.findOne(where);
+  findOne(id: string) {
+    return this.columnsRepository.findOne(id);
   }
 
-  update(id: number, updateColumnDto: UpdateColumnsDto) {
-    return this.columnsRepository.update(id, updateColumnDto);
+  async update(id: string, updateColumnDto: UpdateColumnsDto) {
+    await this.columnsRepository.update(id, updateColumnDto);
+
+    return await this.columnsRepository.findOne(id);
   }
 
   async remove(id: string) {

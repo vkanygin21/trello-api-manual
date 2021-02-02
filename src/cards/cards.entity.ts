@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { IsString, MaxLength } from 'class-validator';
 import { Columns } from '../columns/columns.entity';
-import { User } from '../users/user.entity';
+import { Users } from '../users/users.entity';
 import { Comments } from '../comments/comments.entity';
 import { Type } from 'class-transformer';
 
@@ -34,20 +34,20 @@ export class Cards {
    * Relations
    */
 
-  @OneToMany((type) => Comments, (ul) => ul.card, { onDelete: 'CASCADE' })
-  @Type((t) => Comments)
+  @OneToMany(() => Comments, (comments) => comments.card)
+  @Type(() => Comments)
   @JoinColumn()
   comments?: Comments[];
 
-  @ManyToOne((type) => Columns, (el) => el.cards, {
+  @ManyToOne(() => Columns, (columns) => columns.cards, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   public column: Columns;
 
-  @ManyToOne((type) => User, (el) => el.cards, {
+  @ManyToOne(() => Users, (users) => users.cards, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  public user: User;
+  public user: Users;
 }

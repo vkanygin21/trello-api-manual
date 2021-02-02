@@ -14,10 +14,8 @@ export class CommentsOwnerGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const commentId = request.params.id;
     const currentUserId = request.user.id;
-    const [comment] = await this.cardsService.findAll({
-      where: { id: commentId },
-      select: ['userId'],
-    });
+    const comment = await this.cardsService.findOne(commentId);
+
     if (!comment) {
       throw new NotFoundException();
     }

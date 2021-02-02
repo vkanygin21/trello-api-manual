@@ -13,7 +13,7 @@ import { Cards } from '../cards/cards.entity';
 import { Comments } from '../comments/comments.entity';
 
 @Entity()
-export class User {
+export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

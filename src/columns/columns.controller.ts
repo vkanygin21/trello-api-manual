@@ -12,13 +12,14 @@ import {
 import { ColumnsService } from './columns.service';
 import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ColumnsOwnerGuard } from '../auth/columns-owner.guard';
+import { ColumnsOwnerGuard } from './columns-owner.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { Users } from '../users/users.entity';
 
 @ApiBearerAuth()
 @ApiTags('columns')
-@Controller('/users/:userId/columns')
+@Controller('/columns')
 export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 
@@ -26,29 +27,27 @@ export class ColumnsController {
   @Post()
   create(
     @Body() createColumnDto: CreateColumnsDto,
-    @CurrentUser() userId: string,
+    @CurrentUser() user: Users,
   ) {
-    console.log(userId, createColumnDto);
-    return this.columnsService.create(createColumnDto, userId);
+    return this.columnsService.create(createColumnDto, user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.columnsService.findAll();
+  findAll(@CurrentUser() user: Users) {
+    return this.columnsService.findAll(user);
   }
 
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
-    console.log(req.authInfo);
+  findOne(@Param('id') id: string) {
     return this.columnsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateColumnDto: UpdateColumnsDto) {
-    return this.columnsService.update(+id, updateColumnDto);
+    return this.columnsService.update(id, updateColumnDto);
   }
 
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)

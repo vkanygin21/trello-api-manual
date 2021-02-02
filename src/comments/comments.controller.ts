@@ -13,34 +13,38 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateCommentsDto, UpdateCommentsDto } from './comments.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CommentsOwnerGuard } from '../auth/comments-owner.guard';
+import { CommentsOwnerGuard } from './comments.guards';
+import { Users } from '../users/users.entity';
+import { CardsOwnerGuard } from '../cards/cards.guards';
+
 
 @ApiBearerAuth()
 @ApiTags('comments')
 @Controller('/cards/:cardId/comments')
 export class CommentsController {
-  constructor(private readonly cardsService: CommentsService) {}
+  constructor(private readonly commentsService: CommentsService) {
+  }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, CardsOwnerGuard)
   @Post()
   create(
     @Body() createCommentsDto: CreateCommentsDto,
     @Param('cardId') cardId: string,
-    @CurrentUser() userId: string,
+    @CurrentUser() user,
   ) {
-    return this.cardsService.create(createCommentsDto, cardId, userId);
+    return this.commentsService.create(createCommentsDto, cardId, user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.cardsService.findAll();
+  findAll(@CurrentUser() user: Users) {
+    return this.commentsService.findAll(user);
   }
 
   @UseGuards(JwtAuthGuard, CommentsOwnerGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cardsService.findOne(+id);
+    return this.commentsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, CommentsOwnerGuard)
@@ -49,12 +53,12 @@ export class CommentsController {
     @Param('id') id: string,
     @Body() updateCommentsDto: UpdateCommentsDto,
   ) {
-    return this.cardsService.update(+id, updateCommentsDto);
+    return this.commentsService.update(id, updateCommentsDto);
   }
 
   @UseGuards(JwtAuthGuard, CommentsOwnerGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cardsService.remove(id);
+    return this.commentsService.remove(id);
   }
 }

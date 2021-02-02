@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { IsString, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
-import { User } from '../users/user.entity';
+import { Users } from '../users/users.entity';
 import { Cards } from '../cards/cards.entity';
 
 @Entity()
@@ -37,14 +37,14 @@ export class Columns {
    * Relations
    */
 
-  @ManyToOne((type) => User, (el) => el.columns, {
+  @ManyToOne(() => Users, (users) => users.columns, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  public user: User;
+  public user: Users;
 
-  @OneToMany((type) => Cards, (ul) => ul.column)
-  @Type((t) => Cards)
+  @OneToMany(() => Cards, (cards) => cards.column)
+  @Type(() => Cards)
   @JoinColumn()
   cards?: Cards[];
 }

@@ -5,12 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comments } from './comments.entity';
 import { CardsModule } from '../cards/cards.module';
 import { UsersModule } from '../users/users.module';
-import { User } from '../users/user.entity';
+import { Users } from '../users/users.entity';
 import { Cards } from '../cards/cards.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Comments, User, Cards]),
+    TypeOrmModule.forFeature([Comments, Users, Cards]),
     CardsModule,
     UsersModule,
   ],

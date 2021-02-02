@@ -14,6 +14,7 @@ import { CreateUserDto, UpdateUserDto } from './users.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { Users } from './users.entity';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -23,9 +24,7 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const res = await this.usersService.create(createUserDto);
-
-    return res;
+    return await this.usersService.create(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -42,8 +41,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto, @CurrentUser() userId) {
-    return this.usersService.update(userId, updateUserDto);
+  update(@Body() updateUserDto: UpdateUserDto, @CurrentUser() user: Users) {
+    return this.usersService.update(user, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)

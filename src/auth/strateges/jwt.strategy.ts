@@ -3,7 +3,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { jwtConstants } from '../constants';
 import { UsersService } from '../../users/users.service';
-import { User } from '../../users/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,11 +15,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(req, payload: any) {
+  async validate(req, payload) {
     const user = await this.usersService.findOne(payload.sub);
     if (!user) {
       throw new NotFoundException();
     }
-    return { id: payload.sub, username: payload.username };
+    return user;
   }
 }

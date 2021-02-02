@@ -3,45 +3,36 @@ import { CreateCardsDto, UpdateCardsDto } from './cards.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cards } from './cards.entity';
-import { ColumnsService } from '../columns/columns.service';
-import { UsersService } from '../users/users.service';
+import { Users } from '../users/users.entity';
 
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Cards)
     private readonly cardsRepository: Repository<Cards>,
-    private readonly columnsService: ColumnsService,
-    private readonly usersService: UsersService,
   ) {}
 
-  async create(
-    createCardsDto: CreateCardsDto,
-    columnId: string,
-    userId: string,
-  ) {
-    const user = await this.usersService.findOne({ id: userId });
-    const column = await this.columnsService.findOne({
-      id: columnId,
-      userId: userId,
+  async create(createCardsDto: CreateCardsDto, columnId: string, user: Users) {
+    const createCard = await this.cardsRepository.save({
+      ...createCardsDto,
+      userId: user.id,
+      columnId: columnId,
     });
-    const card = await this.cardsRepository.create(createCardsDto);
-    card.user = user;
-    card.column = column;
-
-    return await this.cardsRepository.save(card);
+    return createCard;
   }
 
-  async findAll(query?: any) {
-    return await this.cardsRepository.find(query);
+  async findAll(user: Users) {
+    return await this.cardsRepository.find({ where: { userId: user.id } });
   }
 
-  findOne(where) {
-    return this.cardsRepository.findOne(where);
+  findOne(id: string) {
+    return this.cardsRepository.findOne(id);
   }
 
-  update(id: number, updateCardsDto: UpdateCardsDto) {
-    return this.cardsRepository.update(id, updateCardsDto);
+  async update(id: string, updateCardsDto: UpdateCardsDto) {
+    await this.cardsRepository.update(id, updateCardsDto);
+
+    return await this.cardsRepository.findOne(id);
   }
 
   async remove(id: string) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { Columns } from './columns.entity';
@@ -11,18 +11,26 @@ export class ColumnsService {
     private readonly columnsRepository: Repository<Columns>,
   ) {}
   async create(entity: DeepPartial<Columns>, user: Users) {
-    return this.columnsRepository.save({
+    const saveColumn = await this.columnsRepository.save({
       ...entity,
       userId: user.id,
     });
+
+    try {
+      return this.columnsRepository.findOne(saveColumn.id)
+    }
+
+    catch (error) {
+      throw new BadRequestException(error)
+    }
   }
 
   async findAll(user: Users) {
     return await this.columnsRepository.find({ where: { userId: user.id } });
   }
 
-  findOne(id) {
-    return this.columnsRepository.findOne(id);
+  findOne(id, options?) {
+    return this.columnsRepository.findOne(id, options);
   }
 
   async update(id: string, entity: DeepPartial<Columns>) {

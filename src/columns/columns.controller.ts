@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ColumnsService } from './columns.service';
 import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { ColumnsOwnerGuard } from './columns.guards';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -24,6 +24,7 @@ export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 
   @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: 'object', schema: { example: { name: '' } } })
   @Post()
   create(
     @Body() createColumnDto: CreateColumnsDto,

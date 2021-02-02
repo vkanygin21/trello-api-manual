@@ -12,9 +12,10 @@ import { CardsService } from './cards.service';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateCardsDto, UpdateCardsDto } from './cards.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CardCreateGuard, CardsOwnerGuard } from './cards.guards';
+import { CardsOwnerGuard } from './cards.guards';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Users } from '../users/users.entity';
+import { ColumnsOwnerGuard } from '../columns/columns.guards';
 
 
 @ApiBearerAuth()
@@ -23,12 +24,11 @@ import { Users } from '../users/users.entity';
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
 
-  @UseGuards(JwtAuthGuard, CardCreateGuard)
+  @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)
   @Post()
   @ApiBody({ type: 'object', schema: { example: { name: '', columnId: '' } } })
   create(
     @Body() createCardsDto: CreateCardsDto,
-    @Query('columnId') columnId: string,
     @CurrentUser() user: Users,
   ) {
     return this.cardsService.create(createCardsDto, user);

@@ -6,8 +6,8 @@ import {
   Param,
   Delete,
   UseGuards,
-  Patch, Query
-} from "@nestjs/common";
+  Patch,
+} from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateCardsDto, UpdateCardsDto } from './cards.dto';
@@ -16,7 +16,6 @@ import { CardsOwnerGuard } from './cards.guards';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Users } from '../users/users.entity';
 import { ColumnsOwnerGuard } from '../columns/columns.guards';
-
 
 @ApiBearerAuth()
 @ApiTags('cards')
@@ -27,10 +26,7 @@ export class CardsController {
   @UseGuards(JwtAuthGuard, ColumnsOwnerGuard)
   @Post()
   @ApiBody({ type: 'object', schema: { example: { name: '', columnId: '' } } })
-  create(
-    @Body() createCardsDto: CreateCardsDto,
-    @CurrentUser() user: Users,
-  ) {
+  create(@Body() createCardsDto: CreateCardsDto, @CurrentUser() user: Users) {
     return this.cardsService.create(createCardsDto, user);
   }
 

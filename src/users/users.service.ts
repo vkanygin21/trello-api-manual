@@ -20,15 +20,13 @@ export class UsersService {
 
     try {
       return this.usersRepository.findOne(saveUser.id);
-    }
-
-    catch (error) {
+    } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  async findOne(id, options?) {
-    return await this.usersRepository.findOne(id, options);
+  async findOne(user, options?) {
+    return await this.usersRepository.findOne({ id: user.id }, options);
   }
 
   async update(user: Users, entity: DeepPartial<Users>) {

@@ -17,11 +17,9 @@ export class ColumnsService {
     });
 
     try {
-      return this.columnsRepository.findOne(saveColumn.id)
-    }
-
-    catch (error) {
-      throw new BadRequestException(error)
+      return this.columnsRepository.findOne(saveColumn.id);
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 

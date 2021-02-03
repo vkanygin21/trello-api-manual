@@ -18,11 +18,9 @@ export class CommentsService {
     });
 
     try {
-      return this.commentsRepository.findOne(saveComment.id)
-    }
-
-    catch (error) {
-      throw new BadRequestException(error)
+      return this.commentsRepository.findOne(saveComment.id);
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 

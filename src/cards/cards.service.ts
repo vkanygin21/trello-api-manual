@@ -18,11 +18,9 @@ export class CardsService {
     });
 
     try {
-      return this.cardsRepository.findOne(saveCard.id)
-    }
-
-    catch (error) {
-      throw new BadRequestException(error)
+      return this.cardsRepository.findOne(saveCard.id);
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
@@ -30,7 +28,7 @@ export class CardsService {
     return await this.cardsRepository.find({ where: { userId: user.id } });
   }
 
-  findOne(id: any, options?) {
+  findOne(id, options?) {
     return this.cardsRepository.findOne(id, options);
   }
 

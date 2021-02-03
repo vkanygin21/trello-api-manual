@@ -9,7 +9,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateCommentsDto, UpdateCommentsDto } from './comments.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -17,13 +17,11 @@ import { CommentsOwnerGuard } from './comments.guards';
 import { Users } from '../users/users.entity';
 import { CardsOwnerGuard } from '../cards/cards.guards';
 
-
 @ApiBearerAuth()
 @ApiTags('comments')
 @Controller('comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {
-  }
+  constructor(private readonly commentsService: CommentsService) {}
 
   @UseGuards(JwtAuthGuard, CardsOwnerGuard)
   @ApiBody({

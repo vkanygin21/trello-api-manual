@@ -8,8 +8,7 @@ import { CardsService } from './cards.service';
 
 @Injectable()
 export class CardsOwnerGuard implements CanActivate {
-  constructor(private readonly cardsService: CardsService) {
-  }
+  constructor(private readonly cardsService: CardsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -26,4 +25,3 @@ export class CardsOwnerGuard implements CanActivate {
     return currentUserId === card.userId;
   }
 }
-

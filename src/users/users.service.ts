@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -25,8 +25,8 @@ export class UsersService {
     }
   }
 
-  async findOne(user, options?) {
-    return await this.usersRepository.findOne({ id: user.id }, options);
+  async findOne(id: any, options?: FindOneOptions<Users>) {
+    return await this.usersRepository.findOne(id, options);
   }
 
   async update(user: Users, entity: DeepPartial<Users>) {
@@ -36,7 +36,6 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    await this.usersRepository.findOne({ id });
     await this.usersRepository.delete({ id });
 
     return { id };

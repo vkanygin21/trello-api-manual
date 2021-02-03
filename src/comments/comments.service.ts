@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, FindOneOptions, Repository } from 'typeorm';
 import { Comments } from './comments.entity';
 import { Users } from '../users/users.entity';
 
@@ -12,23 +12,20 @@ export class CommentsService {
   ) {}
 
   async create(entity: DeepPartial<Comments>, user: Users) {
-    const saveComment = await this.commentsRepository.save({
+    return await this.commentsRepository.save({
       ...entity,
       userId: user.id,
     });
-
-    try {
-      return this.commentsRepository.findOne(saveComment.id);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
   }
 
-  async findAll(user: Users) {
-    return await this.commentsRepository.find({ where: { userId: user.id } });
+  findAll(user: Users, cardId: string) {
+    const filter = cardId && { cardId };
+    return this.commentsRepository.find({
+      where: { userId: user.id, ...filter },
+    });
   }
 
-  findOne(id, options?) {
+  findOne(id: any, options?: FindOneOptions<Comments>) {
     return this.commentsRepository.findOne(id, options);
   }
 

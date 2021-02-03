@@ -7,15 +7,16 @@ import {
   Delete,
   UseGuards,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateCommentsDto, UpdateCommentsDto } from './comments.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CommentsOwnerGuard } from './comments.guards';
 import { Users } from '../users/users.entity';
-import { CardsOwnerGuard } from '../cards/cards.guards';
+import { CardOwnerGuard, CardsOwnerGuard } from '../cards/cards.guards';
 
 @ApiBearerAuth()
 @ApiTags('comments')
@@ -33,10 +34,15 @@ export class CommentsController {
     return this.commentsService.create(createCommentsDto, user);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiQuery({
+    name: 'cardId',
+    description: 'The id of a card',
+    required: false,
+  })
+  @UseGuards(JwtAuthGuard, CardOwnerGuard)
   @Get()
-  findAll(@CurrentUser() user: Users) {
-    return this.commentsService.findAll(user);
+  findAll(@CurrentUser() user: Users, @Query('cardId') cardId: string) {
+    return this.commentsService.findAll(user, cardId);
   }
 
   @UseGuards(JwtAuthGuard, CommentsOwnerGuard)

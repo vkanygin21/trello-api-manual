@@ -11,7 +11,7 @@ import {
 import { ColumnsService } from './columns.service';
 import { CreateColumnsDto, UpdateColumnsDto } from './columns.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
-import { ColumnsOwnerGuard } from './columns.guards';
+import { ColumnOwnerGuard, ColumnsOwnerGuard } from './columns.guards';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Users } from '../users/users.entity';
@@ -32,7 +32,7 @@ export class ColumnsController {
     return this.columnsService.create(createColumnDto, user);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ColumnOwnerGuard)
   @Get()
   findAll(@CurrentUser() user: Users) {
     return this.columnsService.findAll(user);

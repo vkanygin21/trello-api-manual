@@ -29,7 +29,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get()
   findOne(@CurrentUser() user: Users) {
-    return this.usersService.findOne(user);
+    return this.usersService.findOne(user.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -39,8 +39,8 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Delete()
+  remove(@CurrentUser() user: Users) {
+    return this.usersService.remove(user.id);
   }
 }

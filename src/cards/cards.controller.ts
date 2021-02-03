@@ -7,15 +7,16 @@ import {
   Delete,
   UseGuards,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateCardsDto, UpdateCardsDto } from './cards.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CardsOwnerGuard } from './cards.guards';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { Users } from '../users/users.entity';
-import { ColumnsOwnerGuard } from '../columns/columns.guards';
+import { ColumnOwnerGuard, ColumnsOwnerGuard } from '../columns/columns.guards';
 
 @ApiBearerAuth()
 @ApiTags('cards')
@@ -30,10 +31,15 @@ export class CardsController {
     return this.cardsService.create(createCardsDto, user);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiQuery({
+    name: 'columnId',
+    description: 'The id of a column',
+    required: false,
+  })
+  @UseGuards(JwtAuthGuard, ColumnOwnerGuard)
   @Get()
-  findAll(@CurrentUser() user: Users) {
-    return this.cardsService.findAll(user);
+  findAll(@CurrentUser() user: Users, @Query('columnId') columnId: string) {
+    return this.cardsService.findAll(user, columnId);
   }
 
   @UseGuards(JwtAuthGuard, CardsOwnerGuard)
